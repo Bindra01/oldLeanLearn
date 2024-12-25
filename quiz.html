@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeanLearn Quiz</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            background-color: #333; /* Light black background */
+            color: #fff; /* White text */
+        }
+
+        header {
+            background-color: #000; /* Black background */
+            padding: 20px;
+            text-align: left;
+            padding-left: 100px; /* Left margin */
+        }
+
+        header img {
+            width: 150px; /* Enlarged size */
+            height: auto;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px 20px;
+            position: relative;
+        }
+
+        .question-box {
+            border: 2px solid #ff0; /* Yellow border */
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 80%;
+            text-align: center;
+            position: relative;
+            margin-top: 100px; /* Add margin to avoid overlap with mentor image */
+        }
+
+        .mentor-image {
+            position: absolute;
+            margin-top: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: auto;
+            display: block;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap; /* Allow options to wrap to the next line */
+            justify-content: center;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        .option {
+            margin: 10px; /* Add margin between options */
+        }
+
+        .option img {
+        width: 50px;
+        height: 50px;
+        padding: 5px;
+
+        }
+
+        .option div {
+            width: 100px; /* Standard size for non-image options */
+            height: auto;
+            border: 2px solid #fff;
+            transition: border-color 0.3s;
+            cursor: pointer;
+            padding: 10px; /* Add padding for better visibility */
+        }
+
+        .option img.selected, .option div.selected {
+            border-color: #ff0; /* Yellow border on selection */
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+        }
+        button {
+           padding: 10px 20px;
+            font-size: 12px;
+           width: auto;
+        }
+        .button-container {
+             margin-top: 10px;
+        }
+
+
+
+        .submit-button, .next-button, .prev-button {
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border: 2px solid #ff0; /* Yellow border */
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .submit-button:hover, .next-button:hover, .prev-button:hover {
+            background-color: #555;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .right {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        .left {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        .situation-image {
+            width: 100px;
+            height: 100px;
+            margin: 0 10px;
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding-left: 20px; /* Adjust left margin */
+                text-align: center;
+            }
+            body {
+                   font-size: 12px;
+            }
+
+            .container {
+                padding: 20px 10px;
+            }
+
+            .question-box {
+                width: 100%;
+                padding: 10px;
+                font-size: 12px;
+                margin-top: 65px; /* Adjust margin for smaller screens */
+            }
+
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+            button {
+                padding: 5px 10px;
+            font-size: 10px;
+            width: 60px;
+            }
+            .button-container {
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+              margin-top: 10px;
+            }
+            .button-container button {
+            width: auto;
+            margin: 0 5px;
+            padding: 5px 10px;
+            font-size: 10px;
+        }
+
+    
+    }
+
+            .submit-button, .next-button, .prev-button {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .mentor-image {
+                width: 80px;
+                margin-top: 0px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .option img, .option div {
+                width: 50px;
+            height: 50px;
+            padding: 5px;
+            }
+
+            .situation-image {
+                width: 80px;
+                height: 80px;
+            }
+        
+
+        @media (max-width: 480px) {
+            header img {
+                width: 100px;
+            }
+
+            .mentor-image {
+                width: 60px;
+            }
+
+            .option img, .option div {
+                width: 50px;
+            height: 50px;
+            padding: 5px;
+            }
+
+            .situation-image {
+                width: 50px;
+                height: 50px;
+            }
+
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+
+            .submit-button, .next-button, .prev-button {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="logo.jpg" alt="LeanLearn Logo">
+    </header>
+    <div class="container">
+        <img src="" alt="Mentor Image" class="mentor-image" id="mentorImage">
+        <div class="question-box">
+            <p id="questionText"></p>
+            <div class="options" id="optionsContainer"></div>
+        </div>
+        <div class="buttons">
+            <div class="center">
+                <button class="submit-button" onclick="submitAnswer()">Submit</button>
+            </div>
+            <div class="right">
+                <button class="next-button" onclick="nextQuestion()" id="nextButton" style="display: none;">Next</button>
+            </div>
+            <div class="left">
+                <button class="prev-button" onclick="prevQuestion()" id="prevButton" style="display: none;">Previous</button>
+            </div>
+        </div>
+        <div class="message" id="message"></div>
+    </div>
+
+    <audio id="clickSound" src="click.mp3" preload="auto"></audio>
+    <audio id="submitSound" src="submit.mp3" preload="auto"></audio>
+    <script>
+        let currentQuestionIndex = 0;
+        let selectedOptions = [];
+        const mentorImage = new URLSearchParams(window.location.search).get('mentor');
+        const questions = [
+            {
+                question: 'What is the correct combination of two, to measure the speed of an object? (select any two)',
+                options: ['ruler.jpg', 'speedometer.jpg', 'clock.jpg', 'compass.jpg'],
+                correctCombination: ['ruler.jpg', 'clock.jpg'],
+                isImageOptions: true,
+                disappearOptions: false
+            },
+            {
+                question: 'Construct the formula of Speed<br><br>Speed &nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;&nbsp;&nbsp;&nbsp;/<br><br>(click the options in order)',
+                options: ['time', 'distance', 'mass', 'acceleration'],
+                correctCombination: ['distance', 'time'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'If the speed of the car below is 2m/s, then in 30 secs, how much distance will this car cover?',
+                options: ['50mt.jpg', '120mt.jpg', '60mt.jpg', '20mt.jpg'],
+                correctCombination: ['60mt.jpg'],
+                isImageOptions: true,
+                disappearOptions: false
+            },
+            {
+                question: 'To reach 60m in 30 secs, how much should be the speed of an object?',
+                options: ['1_m_s.jpg', '2_m_s.jpg', '3_m_s.jpg', '5_m_s.jpg'],
+                correctCombination: ['2_m_s.jpg'],
+                isImageOptions: true,
+                disappearOptions: false
+            },
+            {
+                question: 'How much time it takes an object travelling at a speed of 5m/s, to cover 100m?',
+                options: ['10s.jpg', '500s.jpg', '20s.jpg', '50s.jpg'],
+                correctCombination: ['20s.jpg'],
+                isImageOptions: true,
+                disappearOptions: false
+            },
+            {
+                question: 'If something is not in motion, then its ________________ is not changing with time.',
+                options: ['Position', 'Length', 'Mass'],
+                correctCombination: ['Position'],
+                isImageOptions: false,
+                disappearOptions: false
+            },
+            {
+                question: 'If something is in motion then its ________________ is definitely changing with time.',
+                options: ['Speed', 'Position', 'Acceleration', 'Mass'],
+                correctCombination: ['Position'],
+                isImageOptions: false,
+                disappearOptions: false
+            },
+            {
+                question: 'If something is not in motion, then its ________________ is not changing with time.',
+                options: ['Speed', 'Mass', 'Length'],
+                correctCombination: ['Speed'],
+                isImageOptions: false,
+                disappearOptions: false
+            },
+            {
+                question: 'Construct the formula or equation<br><br>-------------------- &nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;&nbsp;&nbsp;&nbsp;-------------------- * &nbsp;&nbsp;&nbsp;&nbsp;--------------------<br><br>(click the options in order)',
+                options: ['Mass', 'Time', 'Distance', 'Speed'],
+                correctCombination: ['Distance', 'Speed', 'Time'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Construct the formula or equation for Speed<br><br>-------------------- &nbsp;&nbsp;&nbsp;&nbsp;= &nbsp;&nbsp;&nbsp;&nbsp;------ / ----------<br><br>(click the options in order)',
+                options: ['Time', 'Distance', 'Speed', 'Mass'],
+                correctCombination: ['Speed', 'Distance', 'Time'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Fill the missing word in the equation:<br><br>distance = 10 _____<br><br>(click the correct option)',
+                options: ['Km', 'second', 'Km/h', 'Kg'],
+                correctCombination: ['Km'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Fill the missing word in the equation:<br><br>Speed = 50 m_____<br><br>(click the correct option)',
+                options: ['/s', '/kg', 'X m', '+s'],
+                correctCombination: ['/s'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Calculate the distance using the options given below.<br><br>----------------------- = ------------- * -----------------<br><br>(click the options in order)',
+                options: ['Distance', '5m/s', '50m', '20s', '50kg', '10m/s2'],
+                correctCombination: ['Distance', '5m/s', '20s'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Calculate the speed using the options below.<br><br>________________   ____     _____________  _____   ___________<br>(click the options in order)',
+                options: ['Speed', '/', '=', '5m/s', '50m', '20s', '50kg', '10m/s2'],
+                correctCombination: ['Speed', '=', '50m', '/', '20s'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Calculate the time using the options give below.<br><br>________________  ______   ___________ ______ _____________<br><br>(clicking in order)',
+                options: ['Time', '5m/s', '50m', '20secs', '=', '/'],
+                correctCombination: ['Time', '=', '50m', '/', '5m/s'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'In uniform motion an object covers equal_______ in equal interval of _________<br><br>(click the options in order)',
+                options: ['distance', 'time', 'speed', 'acceleration'],
+                correctCombination: ['distance', 'time'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'If an object is covering equal distance in equal interval of time, then which of the following quantities is a constant<br><br>(click the correct option)',
+                options: ['Motion', 'Speed', 'Displacement', 'Acceleration'],
+                correctCombination: ['Speed'],
+                isImageOptions: false,
+                disappearOptions: false
+            },
+            {
+                question: 'The situation below represents a uniform motion<br><br><img src="meter1.jpg" alt="Meter 1" class="situation-image"> <img src="meter2.jpg" alt="meter2" class="situation-image"> <img src="meter3.jpg" alt="meter3" class="situation-image"><br><br>(click the correct option)',
+                options: ['True', 'False'],
+                correctCombination: ['True'],
+                isImageOptions: false,
+                disappearOptions: false
+            },
+            {
+                question: 'The situation below does not represent a uniform motion<br><br><img src="0mt.jpg" alt="0mt" class="situation-image"> <img src="10mt.jpg" alt="10mt" class="situation-image"> <img src="20m_t.jpg" alt="20m_t" class="situation-image"> <img src="30mt.jpg" alt="30mt" class="situation-image"><br><br>(click the correct option)',
+                options: ['True', 'False'],
+                correctCombination: ['False'],
+                isImageOptions: false,
+                disappearOptions: false
+            },
+            {
+                question: 'The concept non uniform motion implies change in _____________ with change in __________. And that quantity is refereed as _______________<br><br>(Click in order)',
+                options: ['speed', 'distance', 'time', 'acceleration'],
+                correctCombination: ['speed', 'time', 'acceleration'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Construct the formula for speed for the situation below, using the given options<br><br><img src="nu0.jpg" alt="nu0" class="situation-image"> <img src="nu1.jpg" alt="nu1" class="situation-image"> <img src="nu2.jpg" alt="nu2" class="situation-image"> <img src="nu3.jpg" alt="nu3" class="situation-image"><br><br>Speed = _______+_______+_______ / ______+_______+_______<br><br>(click the options in order)',
+                options: ['10m', '15m', '25m', '10s', '15s', '50m', '5s', '20s'],
+                correctCombination: ['10m', '25m', '50m', '10s', '15s', '20s'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Construct the formula of acceleration<br><br>_______________   =   ____________   _____   __________________<br><br>(click the options in order)',
+                options: ['Speed', 'Time', 'Acceleration', 'Distance', '/', '*', '+'],
+                correctCombination: ['Acceleration', 'Speed', '/', 'Time'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Construct the formula for speed<br><br>Speed = ____________  _____  ____________<br><br>(click in order)',
+                options: ['Distance', 'Acceleration', 'Time', 'x', '+'],
+                correctCombination: ['Acceleration', 'x', 'Time'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Construct the formula of acceleration<br><br>_______________  =    __________ __  __________   ___    __________<br><br>(click in order)',
+                options: ['Final speed', 'Acceleration', 'Initial speed', '-', '/', 'x', 'Time'],
+                correctCombination: ['Acceleration', 'Final speed', '-', 'Initial speed', '/', 'Time'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Construct the units of acceleration<br><br>a = _______  _____  ________<br><br>(click in order)',
+                options: ['m', '/', 'x', '+', 's^2', 'kg', 's'],
+                correctCombination: ['m', '/', 's^2'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Fill the missing values<br><br>acceleration = /s^2<br><br>(click the correct option)',
+                options: ['s', 'm', 'm^2', 'kg'],
+                correctCombination: ['m'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Calculate the acceleration for the situation below<br><br><img src="a1.jpg" alt="a1" class="situation-image"> <img src="a2.jpg" alt="a2" class="situation-image"><br><br>Acceleration = ____________ ___ _________ ____ _________<br><br>(click the options in order)',
+                options: ['10m/s', '-', '/', '50m/s', '0sec', '30secs', '40m/s'],
+                correctCombination: ['50m/s', '-', '10m/s', '/', '30secs'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'Calculate the speed using the options given below.<br><br>________________   =   ______________   x   ___________________<br><br>(click in order)',
+                options: ['5m/s^2', '50m/s', '20s', '50m', 'Speed'],
+                correctCombination: ['Speed', '5m/s^2', '20s'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'The velocity of an object is 50km/h. Which of the following will make this a more precise statement?<br><br>(click the correct option)',
+                options: ['Change of units', 'Giving direction', 'Change of magnitude', 'Its already precise'],
+                correctCombination: ['Giving direction'],
+                isImageOptions: false,
+                disappearOptions: false
+            },
+            {
+                question: 'Displacement, velocity, acceleration are all ____________quantities and distance, speed are _________quantities<br><br>(click in order)',
+                options: ['scaler', 'vector'],
+                correctCombination: ['vector', 'scaler'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: '1km ______ 1m<br><br>(click the correct option)',
+                options: ['<', '>', '='],
+                correctCombination: ['>'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: '2km = _____ m<br><br>(click the correct option)',
+                options: ['1000', '1500', '100', '2000'],
+                correctCombination: ['2000'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: '1m = ______ _______ _______ _________<br><br>(click the options in order)',
+                options: ['1000', '1', '10000', '/', 'km', 'cm', '+'],
+                correctCombination: ['1', '/', '1000', 'km'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'A 10 years old average sized boy (no superpowers) is riding a bicycle and tells you that he can ride at a speed of 1km/s. This is definitely not true, what could be the correct speed. Guess.<br><br>(click the correct option)',
+                options: ['1km/h', '10km/s'],
+                correctCombination: ['1km/h'],
+                isImageOptions: false,
+                disappearOptions: false
+            },
+            {
+                question: '_____________ is always a constant in a uniform circular motion but __________ is not.<br><br>(click in order)',
+                options: ['velocity', 'Speed'],
+                correctCombination: ['Speed', 'velocity'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'For a circle below, an object starts at a point and reaches again at the same point in 30 secs.<br><br><img src="circle.jpg" alt="circle" class="situation-image"><br><br>then, Speed = _____ ________ _________ ________ __________<br><br>(click in order)',
+                options: ['3.14', '2', '/', '30', '*', '5'],
+                correctCombination: ['2', '3.14', '5', '/', '30'],
+                isImageOptions: false,
+                disappearOptions: true
+            },
+            {
+                question: 'In which of the following scenarios will the cart below move?',
+                options: ['cart1.jpg', 'cart2.jpg'],
+                correctCombination: ['cart1.jpg'],
+                isImageOptions: true,
+                disappearOptions: false
+            },
+            {
+                question: 'In which situation the cart will move?',
+                options: ['cart4.jpg', 'pull_cart.jpg'],
+                correctCombination: ['pull_cart.jpg'],
+                isImageOptions: true,
+                disappearOptions: false
+            },
+            {
+                question: 'In reference to the picture below, choose the right way to apply a force to open the door.<br><br><img src="push_sign.jpg" alt="Push Sign" class="situation-image">',
+                options: ['push_door.jpg', 'pull_door.jpg'],
+                correctCombination: ['push_door.jpg'],
+                isImageOptions: true,
+                disappearOptions: false
+            },
+            {
+                question: 'In reference to the picture below, choose the right way to apply a force to open the door.<br><br><img src="pull_sign.jpg" alt="Pull Sign" class="situation-image">',
+                options: ['push_door.jpg', 'pull_door.jpg'],
+                correctCombination: ['pull_door.jpg'],
+                isImageOptions: true,
+                disappearOptions: false
+            },
+            {
+                question: 'Guess the final shape of the object after being squeezed by the force of a robotic arm.<br><br><img src="ball.jpg" alt="Ball" class="situation-image">',
+                options: ['ball1.jpg', 'ball2.jpg'],
+                correctCombination: ['ball2.jpg'],
+                isImageOptions: true,
+                disappearOptions: false
+            },
+            {
+                question: 'When____________ is applied to an object, it can make an object ___________  or change its ____________.<br><br>(click the options in order)',
+                options: ['shape', 'move', 'force'],
+                correctCombination: ['force', 'move', 'shape'],
+                isImageOptions: false,
+                disappearOptions: true
+            }
+        ];
+
+        function playSound(audioId) {
+            const audio = document.getElementById(audioId);
+            audio.currentTime = 0;
+            audio.play();
+        }
+
+        function selectOption(element, option) {
+            if (questions[currentQuestionIndex].disappearOptions) {
+                if (!selectedOptions.includes(option)) {
+                    selectedOptions.push(option);
+                    element.style.display = 'none';
+                    updateQuestionBox();
+                } else {
+                    selectedOptions = selectedOptions.filter(opt => opt !== option);
+                    element.style.display = 'block';
+                    updateQuestionBox();
+                }
+            } else {
+                if (selectedOptions.includes(option)) {
+                    selectedOptions = selectedOptions.filter(opt => opt !== option);
+                    element.classList.remove('selected');
+                } else {
+                    selectedOptions.push(option);
+                    element.classList.add('selected');
+                }
+            }
+            playSound('clickSound');
+        }
+
+        function updateQuestionBox() {
+            const questionBox = document.getElementById('questionText');
+            const [lhs, rhs1, rhs2, rhs3, rhs4, rhs5] = selectedOptions;
+            questionBox.innerHTML = questions[currentQuestionIndex].question;
+            if ([1, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 34, 35, 36, 37, 38, 39, 40, 41].includes(currentQuestionIndex)) {
+                if (currentQuestionIndex === 1) {
+                    questionBox.innerHTML = `Construct the formula of Speed<br><br>Speed &nbsp;&nbsp;&nbsp;&nbsp;= ${rhs1 || '____'} / ${rhs2 || '____'}<br><br>(click the options in order)`;
+                } else if (currentQuestionIndex === 8) {
+                    questionBox.innerHTML = `Construct the formula or equation<br><br>${lhs || '____'} &nbsp;&nbsp;&nbsp;&nbsp;= ${rhs1 || '____'} x ${rhs2 || '____'}<br><br>(click the options in order)`;
+                } else if (currentQuestionIndex === 9) {
+                    questionBox.innerHTML = `Construct the formula or equation for Speed<br><br>${lhs || '____'} &nbsp;&nbsp;&nbsp;&nbsp;= ${rhs1 || '____'} / ${rhs2 || '____'}<br><br>(click the options in order)`;
+                } else if (currentQuestionIndex === 12) {
+                    questionBox.innerHTML = `Calculate the distance using the options given below.<br><br>${lhs || '____'} &nbsp;&nbsp;&nbsp;&nbsp;= ${rhs1 || '____'} x ${rhs2 || '____'}<br><br>(click the options in order)`;
+                } else if (currentQuestionIndex === 13) {
+                    questionBox.innerHTML = `Calculate the speed using the options below.<br><br>${lhs || '____'} ${rhs1 || '____'} ${rhs2 || '____'} ${rhs3 || '____'} ${rhs4 || '____'}<br><br>(click the options in order)`;
+                } else if (currentQuestionIndex === 14) {
+                    questionBox.innerHTML = `Calculate the time using the options give below.<br><br>${lhs || '____'} ${rhs1 || '____'} ${rhs2 || '____'} ${rhs3 || '____'} ${rhs4 || '____'}<br><br>(clicking in order)`;
+                } else if (currentQuestionIndex === 15) {
+                    questionBox.innerHTML = `In uniform motion an object covers equal_______ in equal interval of _________<br><br>(click the options in order)`;
+                } else if (currentQuestionIndex === 16) {
+                    questionBox.innerHTML = `If an object is covering equal distance in equal interval of time, then which of the following quantities is a constant<br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 17) {
+                    questionBox.innerHTML = `The situation below represents a uniform motion<br><br><img src="meter1.jpg" alt="Meter 1" class="situation-image"> <img src="meter2.jpg" alt="meter2" class="situation-image"> <img src="meter3.jpg" alt="meter3" class="situation-image"><br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 18) {
+                    questionBox.innerHTML = `The situation below does not represent a uniform motion<br><br><img src="0mt.jpg" alt="0mt" class="situation-image"> <img src="10mt.jpg" alt="10mt" class="situation-image"> <img src="20m_t.jpg" alt="20m_t" class="situation-image"> <img src="30mt.jpg" alt="30mt" class="situation-image"><br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 19) {
+                    questionBox.innerHTML = `The concept non uniform motion means change in ${lhs || '________'} with change in ${rhs1 || '________'}. And that quantity is referred as ${rhs2 || '________'}<br><br>(Click in order)`;
+                } else if (currentQuestionIndex === 20) {
+                    questionBox.innerHTML = `Construct the formula for speed for the situation below, using the given options<br><br><img src="nu0.jpg" alt="nu0" class="situation-image"> <img src="nu1.jpg" alt="nu1" class="situation-image"> <img src="nu2.jpg" alt="nu2" class="situation-image"> <img src="nu3.jpg" alt="nu3" class="situation-image"><br><br>Speed = ${lhs || '________'} + ${rhs1 || '________'} + ${rhs2 || '________'} / ${rhs3 || '________'} + ${rhs4 || '________'} + ${rhs5 || '________'}<br><br>(click the options in order)`;
+                } else if (currentQuestionIndex === 21) {
+                    questionBox.innerHTML = `Construct the formula of acceleration<br><br>${lhs || '________'} = ${rhs1 || '________'} ${rhs2 || '________'} ${rhs3 || '________'}<br><br>(click the options in order)`;
+                } else if (currentQuestionIndex === 22) {
+                    questionBox.innerHTML = `Construct the formula for speed<br><br>Speed = ${lhs || '________'} ${rhs1 || '________'} ${rhs2 || '________'}<br><br>(click in order)`;
+                } else if (currentQuestionIndex === 23) {
+                    questionBox.innerHTML = `Construct the formula of acceleration<br><br>${lhs || '________'} = ${rhs1 || '________'} ${rhs2 || '________'} ${rhs3 || '________'} ${rhs4 || '________'} ${rhs5 || '________'}<br><br>(click in order)`;
+                } else if (currentQuestionIndex === 24) {
+                    questionBox.innerHTML = `Construct the units of acceleration<br><br>a = ${lhs || '________'} ${rhs1 || '________'} ${rhs2 || '________'}<br><br>(click in order)`;
+                } else if (currentQuestionIndex === 25) {
+                    questionBox.innerHTML = `Fill in the missing values<br><br>acceleration = ${lhs || '____'}/s^2<br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 26) {
+                    questionBox.innerHTML = `Calculate the acceleration for the situation below<br><br><img src="a1.jpg" alt="a1" class="situation-image"> <img src="a2.jpg" alt="a2" class="situation-image"><br><br>Acceleration = ${lhs || '__________'} ${rhs1 || '___'} ${rhs2 || '_________'} ${rhs3 || '____'} ${rhs4 || '_________'}<br><br>(click the options in order)`;
+                } else if (currentQuestionIndex === 27) {
+                    questionBox.innerHTML = `Calculate the speed using the options given below.<br><br>${lhs || '________'} = ${rhs1 || '________'} x ${rhs2 || '________'}<br><br>(click in order)`;
+                } else if (currentQuestionIndex === 28) {
+                    questionBox.innerHTML = `The velocity of an object is 50km/h. Which of the following will make this a more precise statement?<br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 29) {
+                    questionBox.innerHTML = `Displacement, velocity, acceleration are all ${lhs || '__________'} quantities and distance, speed are ${rhs1 || '_________'} quantities<br><br>(click in order)`;
+                } else if (currentQuestionIndex === 30) {
+                    questionBox.innerHTML = `1km ${lhs || '____'} 1m<br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 31) {
+                    questionBox.innerHTML = `2km = ${lhs || '____'} m<br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 32) {
+                    questionBox.innerHTML = `1m = ${lhs || '________'} ${rhs1 || '_________'} ${rhs2 || '_________'} ${rhs3 || '________'}<br><br>(click the options in order)`;
+                } else if (currentQuestionIndex === 34) {
+                    questionBox.innerHTML = `_____________ is always a constant in a uniform circular motion but __________ is not.<br><br>(click in order)`;
+                } else if (currentQuestionIndex === 35) {
+                    questionBox.innerHTML = `For a circle below, an object starts at a point and reaches again at the same point in 30 secs.<br><br><img src="circle.jpg" alt="circle" class="situation-image"><br><br>then, Speed = ${lhs || '________'} x ${rhs1 || '________'} x ${rhs2 || '________'} ${rhs3 || '________'} ${rhs4 || '________'}<br><br>(click in order)`;
+                } else if (currentQuestionIndex === 36) {
+                    questionBox.innerHTML = `In which of the following scenarios will the cart below move?<br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 37) {
+                    questionBox.innerHTML = `In which situation the cart will move?<br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 38) {
+                    questionBox.innerHTML = `In reference to the picture below, choose the right way to apply a force to open the door.<br><br><img src="push_sign.jpg" alt="Push Sign" class="situation-image"><br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 39) {
+                    questionBox.innerHTML = `In reference to the picture below, choose the right way to apply a force to open the door.<br><br><img src="pull_sign.jpg" alt="Pull Sign" class="situation-image"><br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 40) {
+                    questionBox.innerHTML = `Guess the final shape of the object after being squeezed by the force of a robotic arm.<br><br><img src="ball.jpg" alt="Ball" class="situation-image"><br><br>(click the correct option)`;
+                } else if (currentQuestionIndex === 41) {
+                    questionBox.innerHTML = `When____________ is applied to an object, it can make an object ___________  or change its ____________<br><br>(click the options in order)<br>${lhs || '____'} ${rhs1 || '____'} ${rhs2 || '____'}`;
+                }
+            }
+        }
+
+        function submitAnswer() {
+            playSound('submitSound');
+            const questionData = questions[currentQuestionIndex];
+            const messageElement = document.getElementById('message');
+            if (JSON.stringify(selectedOptions) === JSON.stringify(questionData.correctCombination)) {
+                messageElement.textContent = 'Correct!';
+            } else {
+                messageElement.textContent = 'Incorrect!';
+            }
+            document.getElementById('nextButton').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function loadQuestion() {
+            const questionData = questions[currentQuestionIndex];
+            const questionBox = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+
+            selectedOptions = [];
+            questionBox.innerHTML = questionData.question;
+            optionsContainer.innerHTML = '';
+
+            if (questionData.isImageOptions) {
+                questionData.options.forEach(option => {
+                    const optionElement = document.createElement('div');
+                    optionElement.classList.add('option');
+                    optionElement.innerHTML = `<img src="${option}" alt="${option}" onclick="selectOption(this, '${option}')">`;
+                    optionsContainer.appendChild(optionElement);
+                });
+            } else {
+                questionData.options.forEach(option => {
+                    const optionElement = document.createElement('div');
+                    optionElement.classList.add('option');
+                    optionElement.innerHTML = `<div onclick="selectOption(this, '${option}')">${option}</div>`;
+                    optionsContainer.appendChild(optionElement);
+                });
+            }
+
+            updateQuestionBox();
+            document.getElementById('message').textContent = '';
+            document.getElementById('nextButton').style.display = 'none';
+
+            if (currentQuestionIndex === 0) {
+                document.getElementById('prevButton').style.display = 'none';
+            } else {
+                document.getElementById('prevButton').style.display = 'block';
+            }
+        }
+
+        window.onload = function() {
+            document.getElementById('mentorImage').src = mentorImage;
+            currentQuestionIndex = parseInt(localStorage.getItem('currentQuestionIndex')) || 0;
+            loadQuestion();
+        };
+
+        window.onbeforeunload = function() {
+            localStorage.setItem('currentQuestionIndex', currentQuestionIndex);
+        };
+    </script>
+</body>
+</html>
